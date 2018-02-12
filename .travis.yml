@@ -16,5 +16,5 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-26
 
-script:
- - chmod +x ./gradlew build connectedCheck
+before_script: 
+    - chmod +x gradlew
