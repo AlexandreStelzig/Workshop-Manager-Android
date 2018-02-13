@@ -23,7 +23,7 @@ before_script:
     - android list targets
     - echo "y" | android update sdk -a --no-ui --filter sys-img-x86-google_apis-25
     - android list targets
-    - echo "n" | android create avd --name myandroid22 -t "android-25" --abi "google_apis/x86"
+    - echo "n" | android create avd --name test -t "android-25" --abi "google_apis/x86"
     - emulator -avd test -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     - adb shell input keyevent 82 &
