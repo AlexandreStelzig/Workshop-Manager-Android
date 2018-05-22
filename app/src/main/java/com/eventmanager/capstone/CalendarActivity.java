@@ -16,6 +16,7 @@ import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
+import com.eventmanager.capstone.database.Database;
 import com.eventmanager.capstone.models.CalendarEventModel;
 
 import java.text.SimpleDateFormat;
@@ -37,16 +38,20 @@ public class CalendarActivity extends AppCompatActivity {
 
 
     private WeekView mWeekView;
-    private List<CalendarEventModel> calendarEventModelList;
+    private List<CalendarEventModel> calendarEventModelList = new ArrayList<>();
 
     private WEEK_VIEW_TYPE currentWeekViewType = WEEK_VIEW_TYPE.WEEK;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Database.open(this);
+
         setContentView(R.layout.activity_calendar);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
@@ -55,8 +60,9 @@ public class CalendarActivity extends AppCompatActivity {
         mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
             @Override
             public void onEventClick(WeekViewEvent event, RectF eventRect) {
-                Intent openProfileIntent = new Intent(CalendarActivity.this, WorkshopActivity.class);
-                startActivity(openProfileIntent);
+                Intent workshopIntent = new Intent(CalendarActivity.this, WorkshopActivity.class);
+                workshopIntent.putExtra("EventId", (int) event.getId());
+                startActivity(workshopIntent);
             }
         });
 
@@ -69,11 +75,8 @@ public class CalendarActivity extends AppCompatActivity {
 
                 // Populate the week view with some events.
                 List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
-                Log.d("TEST", "new");
                 for (CalendarEventModel calendarEventModel : calendarEventModelList) {
                     WeekViewEvent weekViewEvent = calendarEventModel.toWeekViewEvent();
-                    Log.d("TEST", "added");
-
                     if (eventMatches(weekViewEvent, newYear, newMonth)) {
                         events.add(weekViewEvent);
                     }
@@ -98,16 +101,14 @@ public class CalendarActivity extends AppCompatActivity {
 
 
     protected String getEventTitle(String name, Calendar startTime, Calendar endTime) {
-        return String.format(name + " from %02d:%02d to %02d:%02d, %s/%d", startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), startTime.get(Calendar.MONTH) + 1, startTime.get(Calendar.DAY_OF_MONTH));
+        return String.format(name + " from %02d:%02d to %02d:%02d, %s/%d", startTime.get(Calendar.HOUR_OF_DAY),
+                startTime.get(Calendar.MINUTE), endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), startTime.get(Calendar.MONTH) + 1, startTime.get(Calendar.DAY_OF_MONTH));
     }
 
     private void initializeCalendarEvent() {
-        calendarEventModelList = new ArrayList<>();
+        calendarEventModelList.clear();
 
-        calendarEventModelList.add(new CalendarEventModel("Event 1", 29, 0, "8:00", "9:30", ContextCompat.getColor(this, R.color.colorPrimary)));
-        calendarEventModelList.add(new CalendarEventModel("Event 2", 29, 0, "11:30", "13:25", ContextCompat.getColor(this, R.color.colorPrimary)));
-        calendarEventModelList.add(new CalendarEventModel("Event 3", 31, 0, "11:30", "13:25", ContextCompat.getColor(this, R.color.colorPrimary)));
-        calendarEventModelList.add(new CalendarEventModel("Event 4", 1, 1, "16:20", "17:20", ContextCompat.getColor(this, R.color.colorPrimary)));
+        calendarEventModelList = Database.mCalendarEventDao.fetchAllCalendarEvents();
 
     }
 
