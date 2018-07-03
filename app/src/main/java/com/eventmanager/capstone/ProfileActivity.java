@@ -3,6 +3,7 @@ package com.eventmanager.capstone;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -10,16 +11,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.eventmanager.capstone.adapters.ProfileListViewAdapter;
 import com.eventmanager.capstone.adapters.ProfileLogOffListViewAdapter;
+import com.eventmanager.capstone.database.Database;
+import com.eventmanager.capstone.models.UserModel;
 import com.eventmanager.capstone.utilities.ListViewUtilities;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    private TextView userNameTextView;
+    private TextView userIdTextView;
 
     private ListView optionsListView;
     private ListView logOffListView;
+
+    // Activity Result Codes
+    public final static int SETTINGS_RESULT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +44,11 @@ public class ProfileActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(R.string.activity_profile_title);
 
+        UserModel user = Database.mUserDao.fetchActiveUser();
+
+        ((TextView) findViewById(R.id.profile_user_name)).setText("User Name: " + user.getUsername());
+        ((TextView) findViewById(R.id.profile_user_id)).setText("User Id: " + user.getUserId());
+
 
         optionsListView = (ListView) findViewById(R.id.profile_options_listview);
         logOffListView = (ListView) findViewById(R.id.profile_log_off_list_view);
@@ -47,7 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
         final String[] moreOptionsStrings = getResources().getStringArray(R.array.profile_listview_options);
 
 
-        int[] drawableIds = {R.drawable.ic_settings_black_24dp, R.drawable.ic_feedback_black_24dp, R.drawable.ic_info_black_24dp};
+        int[] drawableIds = {R.drawable.ic_settings_black_24dp, R.drawable.ic_info_black_24dp};
 
         ProfileListViewAdapter adapter = new ProfileListViewAdapter(this, this, moreOptionsStrings, drawableIds);
 
@@ -59,14 +73,11 @@ public class ProfileActivity extends AppCompatActivity {
                 switch (position) {
                     // settings
                     case 0:
-
-                        break;
-                    // send feedback
-                    case 1:
-
+                        Intent openProfileIntent = new Intent(ProfileActivity.this, SettingsActivity.class);
+                        startActivityForResult(openProfileIntent, SETTINGS_RESULT);
                         break;
                     // about
-                    case 2:
+                    case 1:
 
                         break;
                 }
@@ -91,6 +102,7 @@ public class ProfileActivity extends AppCompatActivity {
                 switch (position) {
                     // log off
                     case 0:
+                        Database.mUserDao.removeActiveUser();
                         Intent i = new Intent(ProfileActivity.this, LogInActivity.class);
                         startActivity(i);
                         finish();
@@ -123,6 +135,17 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == SETTINGS_RESULT) {
+            // animation when coming back from activity profile
+            overridePendingTransition(R.anim.anim_stay_idle, R.anim.anim_exit_to_right);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

@@ -72,6 +72,15 @@
                 android:gravity="center"
                 android:text="LOG IN" />
 
+            <ProgressBar
+                android:id="@+id/activity_log_in_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+            </ProgressBar>
+
         </LinearLayout>
 
 

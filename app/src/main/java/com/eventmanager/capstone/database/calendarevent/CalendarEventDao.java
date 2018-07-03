@@ -2,6 +2,7 @@ package com.eventmanager.capstone.database.calendarevent;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -77,6 +78,11 @@ public class CalendarEventDao extends DbContentProvider implements  ICalendarEve
     @Override
     public boolean deleteCalendarEvent(int calendarEventId) {
         return super.delete(CALENDAR_EVENT_TABLE, COLUMN_CALENDAR_EVENT_ID + "=" + calendarEventId, null) > 0;
+    }
+
+    @Override
+    public int fetchNumberOfCalendarEvents() {
+        return (int) DatabaseUtils.longForQuery(mDb, "SELECT COUNT(*) FROM " + CALENDAR_EVENT_TABLE, null);
     }
 
 
