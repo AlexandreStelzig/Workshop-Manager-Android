@@ -3,6 +3,7 @@ package com.eventmanager.capstone;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +14,8 @@ import com.eventmanager.capstone.api.APIManager;
 import com.eventmanager.capstone.api.VolleyCallback;
 import com.eventmanager.capstone.database.Database;
 import com.eventmanager.capstone.utilities.ToastManager;
+
+import org.json.JSONObject;
 
 
 public class LogInActivity extends AppCompatActivity {
@@ -52,19 +55,17 @@ public class LogInActivity extends AppCompatActivity {
 
 
         final VolleyCallback volleyCallback = new VolleyCallback() {
+
             @Override
-            public void onResponse(boolean success) {
-                if(success){
-                    loginUser();
-                }else{
-                    ToastManager.showAToast(LogInActivity.this, LogInActivity.this.getString(R.string.unsuccessfulLoginMessage));
-                    setLoginButtonVisibility(true);
-                }
+            public void onResponse(JSONObject jsonObject) {
+                loginUser();
+                setLoginButtonVisibility(true);
             }
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                ToastManager.showAToast(LogInActivity.this, "Network error");
+                String errorMessage = APIManager.handleServerError(error, LogInActivity.this);
+                ToastManager.showAToast(LogInActivity.this, errorMessage);
                 setLoginButtonVisibility(true);
             }
         };
@@ -72,11 +73,8 @@ public class LogInActivity extends AppCompatActivity {
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 APIManager.getInstance(LogInActivity.this).callLoginAPI(volleyCallback, mUsernameEditText.getText().toString(), mPasswordEditText.getText().toString());
                 setLoginButtonVisibility(false);
-
-
             }
         });
 
