@@ -20,7 +20,7 @@ public class Database {
     private static DatabaseHelper mDatabaseHelper;
 
     // !!! for testing purposes only !!!
-    private static final boolean RESET_DATABASE_ON_OPEN = true;
+    private static final boolean RESET_DATABASE_ON_OPEN = false;
 
     // tables
     public static CalendarEventDao mCalendarEventDao;
