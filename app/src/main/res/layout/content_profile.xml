@@ -33,18 +33,20 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/profile_user_name"
                     android:padding="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Instructor Name:"
+                    android:text="Instructor Name"
                     android:textSize="18sp"
                     android:textColor="@color/textPrimary"/>
 
                 <TextView
+                    android:id="@+id/profile_user_id"
                     android:padding="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Instructor id:"
+                    android:text="Instructor id"
                     android:textSize="16sp"
                     android:textColor="@color/textPrimary"/>
 

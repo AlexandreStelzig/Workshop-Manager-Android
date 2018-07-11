@@ -11,5 +11,6 @@ public interface ICalendarEventDao {
 
     int createCalendarEvent(String name, int dayOfMonth, int month, int year, String startTime, String endTime, String location, String description);
     boolean deleteCalendarEvent(int calendarEventId);
+    int fetchNumberOfCalendarEvents();
 
 }

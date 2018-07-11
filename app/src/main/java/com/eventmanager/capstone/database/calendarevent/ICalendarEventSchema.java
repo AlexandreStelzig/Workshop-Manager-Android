@@ -19,7 +19,7 @@ public interface ICalendarEventSchema {
     String COLUMN_DESCRIPTION = "description";
 
     // ON CREATE
-    String SQL_CREATE_TABLE_LIST_ITEM = "CREATE TABLE "
+    String SQL_CREATE_TABLE_CALENDAR_EVENT = "CREATE TABLE "
             + CALENDAR_EVENT_TABLE + " ("
             + COLUMN_CALENDAR_EVENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_NAME + " TEXT,"

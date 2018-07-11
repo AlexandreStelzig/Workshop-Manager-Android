@@ -118,8 +118,6 @@ public class CalendarEventModel {
         // Initialize start and end time.
         Calendar now = Calendar.getInstance();
 
-        Log.d("test", getYear() + "");
-
         Calendar startTime = (Calendar) now.clone();
         startTime.setTimeInMillis(getParsedStartTime().getTime());
         startTime.set(Calendar.YEAR, getYear());

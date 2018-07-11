@@ -1,47 +1,105 @@
 package com.eventmanager.capstone;
 
 import android.content.Intent;
-import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 
-import com.alamkanak.weekview.DateTimeInterpreter;
-import com.alamkanak.weekview.MonthLoader;
-import com.alamkanak.weekview.WeekView;
-import com.alamkanak.weekview.WeekViewEvent;
-import com.eventmanager.capstone.models.CalendarEventModel;
+import com.android.volley.VolleyError;
+import com.eventmanager.capstone.api.APIManager;
+import com.eventmanager.capstone.api.VolleyCallback;
+import com.eventmanager.capstone.database.Database;
+import com.eventmanager.capstone.utilities.ToastManager;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import org.json.JSONObject;
+
 
 public class LogInActivity extends AppCompatActivity {
+
+    private EditText mUsernameEditText;
+    private EditText mPasswordEditText;
+    private Button mLoginButton;
+    private ProgressBar mProgressBar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Database.open(this);
+
+        if(Database.mUserDao.fetchActiveUser() != null){
+            Intent i = new Intent(LogInActivity.this, CalendarActivity.class);
+            startActivity(i);
+            finish();
+        }else{
+            initiateLoginActivity();
+        }
+
+
+
+    }
+
+    private void initiateLoginActivity() {
+
         setContentView(R.layout.activity_log_in);
 
-        ((Button) findViewById(R.id.activity_log_in_button)).setOnClickListener(new View.OnClickListener() {
+        mUsernameEditText = (EditText) findViewById(R.id.activity_log_in_user_name_edit_text);
+        mPasswordEditText = (EditText) findViewById(R.id.activity_log_in_password_edit_text);
+        mLoginButton = (Button) findViewById(R.id.activity_log_in_button);
+        mProgressBar = (ProgressBar) findViewById(R.id.activity_log_in_progress_bar);
+
+
+        final VolleyCallback volleyCallback = new VolleyCallback() {
+
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                loginUser();
+                setLoginButtonVisibility(true);
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String errorMessage = APIManager.handleServerError(error, LogInActivity.this);
+                ToastManager.showAToast(LogInActivity.this, errorMessage);
+                setLoginButtonVisibility(true);
+            }
+        };
+
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(LogInActivity.this, CalendarActivity.class);
-                startActivity(i);
-                finish();
+                APIManager.getInstance(LogInActivity.this).callLoginAPI(volleyCallback, mUsernameEditText.getText().toString(), mPasswordEditText.getText().toString());
+                setLoginButtonVisibility(false);
             }
         });
 
+        setLoginButtonVisibility(true);
+    }
+
+    private void setLoginButtonVisibility(boolean visible){
+        if(visible){
+            mLoginButton.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
+        }else{
+            mProgressBar.setVisibility(View.VISIBLE);
+            mLoginButton.setVisibility(View.GONE);
+        }
+
+
+    }
+
+    public void loginUser(){
+
+        // todo fetch real user name and user id
+        Database.mUserDao.setActiveUser("Placeholder Name", mUsernameEditText.getText().toString());
+
+        Intent i = new Intent(LogInActivity.this, CalendarActivity.class);
+        startActivity(i);
+        finish();
     }
 }

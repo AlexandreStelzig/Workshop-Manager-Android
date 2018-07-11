@@ -3,10 +3,8 @@ package com.eventmanager.capstone;
 import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +32,7 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     // Activity Result Codes
-    public final static int PROFILE_RESULT_RESULT = 1;
+    public final static int PROFILE_RESULT = 1;
 
 
     private WeekView mWeekView;
@@ -46,7 +44,6 @@ public class CalendarActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Database.open(this);
 
         setContentView(R.layout.activity_calendar);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -134,7 +131,7 @@ public class CalendarActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_profile:
                 Intent openProfileIntent = new Intent(this, ProfileActivity.class);
-                startActivityForResult(openProfileIntent, PROFILE_RESULT_RESULT);
+                startActivityForResult(openProfileIntent, PROFILE_RESULT);
                 return true;
             case R.id.action_today:
                 mWeekView.goToToday();
@@ -195,7 +192,7 @@ public class CalendarActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == PROFILE_RESULT_RESULT) {
+        if (requestCode == PROFILE_RESULT) {
             // animation when coming back from activity profile
             overridePendingTransition(R.anim.anim_stay_idle, R.anim.anim_exit_to_right);
         }

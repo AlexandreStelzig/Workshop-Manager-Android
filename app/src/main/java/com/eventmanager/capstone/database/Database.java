@@ -7,6 +7,9 @@ import android.util.Log;
 
 import com.eventmanager.capstone.database.calendarevent.CalendarEventDao;
 import com.eventmanager.capstone.database.calendarevent.ICalendarEventSchema;
+import com.eventmanager.capstone.database.user.IUserSchema;
+import com.eventmanager.capstone.database.user.UserDao;
+import com.eventmanager.capstone.models.UserModel;
 
 public class Database {
     private static final String TAG = "WorkshopAndroid";
@@ -17,10 +20,11 @@ public class Database {
     private static DatabaseHelper mDatabaseHelper;
 
     // !!! for testing purposes only !!!
-    private static final boolean RESET_DATABASE_ON_OPEN = true;
+    private static final boolean RESET_DATABASE_ON_OPEN = false;
 
     // tables
     public static CalendarEventDao mCalendarEventDao;
+    public static UserDao mUserDao;
 
     private Database(Context context) {
         mDatabaseHelper = new DatabaseHelper(context);
@@ -28,7 +32,11 @@ public class Database {
 
         // init tables
         mCalendarEventDao = new CalendarEventDao(sqLiteDatabase);
-        createCalendarEvents();
+        mUserDao = new UserDao((sqLiteDatabase));
+
+        // todo fetch real events
+        if(mCalendarEventDao.fetchNumberOfCalendarEvents() == 0)
+            createCalendarEvents();
     }
 
     private void createCalendarEvents() {
@@ -69,7 +77,8 @@ public class Database {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL(ICalendarEventSchema.SQL_CREATE_TABLE_LIST_ITEM);
+            db.execSQL(ICalendarEventSchema.SQL_CREATE_TABLE_CALENDAR_EVENT);
+            db.execSQL(IUserSchema.SQL_CREATE_TABLE_USER);
         }
 
         @Override
@@ -80,6 +89,7 @@ public class Database {
 
         public void deleteDatabase(SQLiteDatabase db) {
             db.execSQL(ICalendarEventSchema.SQL_DELETE_TABLE_CALENDAR_EVENT);
+            db.execSQL(IUserSchema.SQL_DELETE_TABLE_USER);
         }
 
         public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
