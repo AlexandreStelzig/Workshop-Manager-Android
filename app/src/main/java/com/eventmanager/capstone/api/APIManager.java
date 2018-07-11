@@ -93,6 +93,8 @@ public class APIManager {
                         }
                         else if(object.has("error_description")) {
                             return object.get("error_description").toString();
+                        } else if(object.has("status")) {
+                            return object.get("status").toString();
                         }
                     }catch (JSONException e)
                     {
